@@ -49,11 +49,10 @@ def get_saving_frames_durations(cap, saving_fps):
         s.append(i)
     return s
 
-def main(video_file, SAVING_FRAMES_PER_SECOND):
-    filename, _ = os.path.splitext(video_file)
+def creat_img(video_file, SAVING_FRAMES_PER_SECOND, image_folder, index):
     # make a folder by the name of the video file
-    if not os.path.isdir(filename):
-        os.mkdir(filename)
+    if not os.path.isdir(image_folder):
+        os.mkdir(image_folder)
     # read the video file    
     cap = cv2.VideoCapture(video_file)
     # get the FPS of the video
@@ -81,7 +80,7 @@ def main(video_file, SAVING_FRAMES_PER_SECOND):
             # if closest duration is less than or equals the frame duration, 
             # then save the frame
             frame_duration_formatted = format_timedelta(timedelta(seconds=frame_duration))
-            cv2.imwrite(os.path.join(filename, f"frame{frame_duration_formatted}.jpg"), frame) 
+            cv2.imwrite(os.path.join(image_folder, f"frame{index}{frame_duration_formatted}.jpg"), frame) 
             # drop the duration spot from the list, since this duration spot is already saved
             try:
                 saving_frames_durations.pop(0)
@@ -94,13 +93,18 @@ def main(video_file, SAVING_FRAMES_PER_SECOND):
 
 # Define input and output paths
 
-video_input = 'VID_20240809_174230703.mp4'
-
-image_folder, _= os.path.splitext(video_input)  # Replace with the path to your images
+videos = [vid for vid in os.listdir("./video/") if vid.endswith(".mp4")]
 
 video_name = 'video.mp4' # Name of the output video file
+image_folder, _= os.path.splitext(video_name)
+image_folder += "_img_folder"
+index = 0
 
-main(video_input,5)
+for video in videos:
+    print(video)
+    video = os.path.join("./video/", video)
+    creat_img(video,5,image_folder, index)
+    index += 1
 
 video_from_images(video_name,30,image_folder)
 
